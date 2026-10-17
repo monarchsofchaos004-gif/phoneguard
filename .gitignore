@@ -1,0 +1,18 @@
+# Android / Gradle
+app-android/.gradle/
+app-android/build/
+app-android/app/build/
+app-android/local.properties
+app-android/.idea/
+*.iml
+*.apk
+*.aab
+*.log
+
+# Python
+__pycache__/
+*.pyc
+
+# secrets (never commit a pairing code or token)
+*.secret
+.env

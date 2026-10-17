@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">手機守門哨</string>
+    <string name="accessibility_desc">偵測並阻止 App 接管整支手機（覆蓋畫面、隱藏返回鍵、搶奪控制），在關鍵時把你帶回主畫面。</string>
+</resources>
