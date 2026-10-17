@@ -21,7 +21,9 @@ jobs:
           distribution: temurin
           java-version: "17"
 
-      - uses: android-actions/setup-android@v3
+      # ubuntu-latest 已內建 Android SDK（ANDROID_HOME）；只需接受授權，缺的元件 AGP 會自動補下
+      - name: Accept Android SDK licenses
+        run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null 2>&1 || true
 
       - uses: gradle/actions/setup-gradle@v3
         with:
