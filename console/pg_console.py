@@ -15,6 +15,8 @@
   pg_console.py -s <配對碼> lift <分鐘>      暫停守門 N 分鐘
   pg_console.py -s <配對碼> guard            立即恢復守門
   pg_console.py -s <配對碼> auto off|on      關/開自動偵測
+  pg_console.py -s <配對碼> ring [秒]        找手機：大聲響 N 秒(預設 60，5~300；靜音模式也會響)
+  pg_console.py -s <配對碼> stopring         停止響鈴
 環境變數：PG_SECRET（取代 -s）、PG_NTFY（轉發站網址，預設 https://ntfy.sh；要與手機端設定相同）
 需要：pip install cryptography
 """
@@ -132,6 +134,8 @@ def main():
     sub.add_parser("watch")
     sub.add_parser("rescue")
     sub.add_parser("guard")
+    sub.add_parser("stopring")
+    sub.add_parser("ring").add_argument("seconds", nargs="?", type=int, default=60)
     for name in ("allow", "block", "unallow", "lift", "auto"):
         p = sub.add_parser(name)
         p.add_argument("arg")
@@ -143,8 +147,10 @@ def main():
 
     if a.op == "watch":
         read_status(secret, follow=True)
-    elif a.op in ("rescue", "guard"):
+    elif a.op in ("rescue", "guard", "stopring"):
         send_cmd(secret, a.op)
+    elif a.op == "ring":
+        send_cmd(secret, "ring %d" % max(0, min(300, a.seconds)))
     elif a.op in ("allow", "block", "unallow", "lift", "auto"):
         send_cmd(secret, f"{a.op} {a.arg}")
     else:

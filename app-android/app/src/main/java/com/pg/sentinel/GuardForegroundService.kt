@@ -54,11 +54,19 @@ class GuardForegroundService : Service() {
                         val now = System.currentTimeMillis()
                         val applied = ArrayList<String>()
                         for (c in accepted) {
+                            val op = c.trim().split(" ", limit = 2)
                             if (c.trim().equals("rescue", ignoreCase = true)) {
                                 withContext(Dispatchers.Main) {
                                     GuardService.instance?.forceHome("遠端救援")
                                 }
                                 applied.add("rescue")
+                            } else if (op[0].equals("ring", ignoreCase = true)) {   // 找手機:大聲響 N 秒(ring 0＝停)
+                                val sec = op.getOrNull(1)?.trim()?.toIntOrNull() ?: 60
+                                applied.add(withContext(Dispatchers.Main) {
+                                    if (sec <= 0) Ringer.stop() else Ringer.start(this@GuardForegroundService, sec)
+                                })
+                            } else if (op[0].equals("stopring", ignoreCase = true)) {
+                                applied.add(withContext(Dispatchers.Main) { Ringer.stop() })
                             } else {
                                 applied.add(policy.apply(c, now))
                             }
@@ -138,6 +146,7 @@ class GuardForegroundService : Service() {
         super.onDestroy()
         scope.cancel()
         GuardBus.onEvent = null
+        Ringer.stop()
     }
 
     companion object {

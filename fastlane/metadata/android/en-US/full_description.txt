@@ -1,0 +1,28 @@
+PhoneGuard is a reactive "takeover guard" for a relative's Android phone. The elder stays free to install any app. Only when an app tries to take over the whole phone (an unclosable full-screen overlay, a hidden navigation bar, an app that keeps pulling itself back to the foreground) the guard steps in: it sends the phone back to the home screen and keeps a rescue button on screen.
+
+Family members can allow, block, rescue, or ring a lost phone (loud alarm, even in silent mode) remotely from their own computer or phone with a small Python console included in the repository. Nothing ever connects into the elder's phone: both sides only make outbound HTTPS requests to a relay (the public ntfy.sh by default, or your own ntfy server).
+
+How it responds
+- Full-screen cover that cannot be closed: repeated HOME presses plus a rescue button
+- Hidden system bars for a long time: HOME plus a rescue panel
+- An app that keeps coming back to the foreground: escalation with repeated HOME and guidance to uninstall it
+- An app on the block list: kicked back to the home screen as soon as it appears
+
+Security
+- Messages are encrypted (AES-256-GCM); topic names are derived from the pairing code.
+- Commands carry a timestamp and a nonce to prevent replay.
+- The relay only sees ciphertext. The family console treats everything from the phone as data.
+
+Status: alpha. The takeover heuristics still need tuning on real devices. This is an accessibility-service based approach (no root, no device owner): it cannot force-stop apps, and a malicious app that also holds accessibility rights may fight back. See SECURITY.md in the repository for the limits.
+
+Permissions (each is granted by the user in system settings)
+- Accessibility service: to see which app is in front and to press HOME.
+- Display over other apps: for the rescue button.
+- Usage access and package visibility: to know which app is in the foreground and to recognise the home launcher.
+- Internet: to reach the ntfy relay with encrypted messages.
+- Foreground service, notifications, start at boot: to keep guarding.
+
+Privacy
+No analytics, no ads, no tracking, no accounts. The only network traffic is encrypted messages to the ntfy relay you configure.
+
+Open source (MIT license).

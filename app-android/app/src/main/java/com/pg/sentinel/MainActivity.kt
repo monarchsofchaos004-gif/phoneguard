@@ -67,6 +67,7 @@ class MainActivity : AppCompatActivity() {
         root.addView(TextView(this).apply { text = "配對碼（家人端輸入同一組）："; textSize = 14f })
         tvPairing = TextView(this).apply { textSize = 20f }
         root.addView(tvPairing)
+        root.addView(btn("🔕 停止響鈴（家人端遠端響鈴時用）") { Ringer.stop() })
         root.addView(btn("重新產生配對碼") {
             Prefs.regenSecret(this)
             refresh()

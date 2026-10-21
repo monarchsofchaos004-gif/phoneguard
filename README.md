@@ -5,12 +5,12 @@
 
 長輩可以自由安裝任何 App。只在某個 App「試圖接管整支手機」（蓋住整個畫面關不掉、藏掉返回鍵、
 一直把自己拉回前景）的那一刻，守門哨跳出來把人帶回主畫面，並留一顆永遠在的救援鈕。
-家人可以從自己的電腦或手機遠端放行／封鎖／救援——**長輩手機永遠不會被任何人連入**。
+家人可以從自己的電腦或手機遠端放行／封鎖／救援，手機不見時也能遠端響鈴找手機——**長輩手機永遠不會被任何人連入**。
 
 Elders can install anything they like. Only when an app tries to *take over the whole phone*
 (un-closable full-screen overlay, hidden navigation bar, re-launching itself to the foreground) does
 the guard step in: it forces the phone back to the home screen and keeps a rescue button on screen.
-Family members can allow / block / rescue remotely from any device — **nothing ever connects into the elder's phone**.
+Family members can allow / block / rescue remotely from any device, and ring a lost phone to find it — **nothing ever connects into the elder's phone**.
 
 ## 為什麼不是「鎖住不給裝」 / Why not just lock the phone down
 - 回復原廠＋裝置擁有者模式（Tier A）最穩，但要清掉手機現況，多數家庭不願意。
@@ -38,6 +38,9 @@ Family members can allow / block / rescue remotely from any device — **nothing
 - 不需要任何伺服器：預設走公開的 ntfy.sh；想完全自己掌握就自架 ntfy，在 App 與主控各填一次網址。
 
 ## 安裝 / Install
+> 從 0.1.1 起改用正式金鑰簽名；裝過更早測試版的要先解除安裝再裝。
+> Since 0.1.1 the APK is signed with a release key; if you installed an earlier test build, uninstall it first.
+
 1. 下載 APK：GitHub Releases（或 Actions 的 artifact），側載到長輩手機。
 2. 開 App，依序按 ①②③ 授權（無障礙／顯示在其他 App 上／使用情況存取），再按「▶ 啟動守門」。
 3. 畫面會顯示 **配對碼**。把它記到家人端（拍照即可，之後要換可按「重新產生」）。
@@ -51,17 +54,20 @@ Family members can allow / block / rescue remotely from any device — **nothing
    python3 console/pg_console.py allow com.some.app   # 放行
    python3 console/pg_console.py lift 30          # 暫停守門 30 分鐘
    python3 console/pg_console.py guard            # 恢復守門
+   python3 console/pg_console.py ring 60          # 找手機：大聲響 60 秒（靜音也會響）
+   python3 console/pg_console.py stopring         # 停止響鈴
    ```
    自架轉發站：`export PG_NTFY=https://ntfy.example.com`（App 內「轉發站網址」填同一個）。
 
 ## 從原始碼編譯 / Build from source
 - JDK 17、Android SDK（compileSdk 34）、Gradle 8.9（不需 wrapper）。
 - `cd app-android && gradle assembleDebug` → `app/build/outputs/apk/debug/app-debug.apk`
-- GitHub Actions 已設定：每次 push 自動編譯，打 `v*` tag 自動發 Release。
+- GitHub Actions 已設定：每次 push 自動編譯（測試版＋未簽章正式版）；Release 只放開發者用自己金鑰簽好的 APK，手動上傳。
 
 ## 路線 / Roadmap
 - [x] 守門核心（無障礙服務）＋救援浮鈕＋常駐服務＋加密轉發
 - [x] 指令防重放、轉發站可設定
+- [x] 遠端響鈴找手機（`ring`／`stopring`，鬧鐘聲道，靜音也會響）
 - [ ] 接管情境實機調參（覆蓋／immersive／re-foreground 的門檻）
 - [ ] 家人端做成 App 的「家長模式」（目前是 Python 主控）
 - [ ] 偵測到「要求無障礙／裝置管理員」畫面時主動提醒長輩不要授權
