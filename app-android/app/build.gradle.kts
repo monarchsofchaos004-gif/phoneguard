@@ -11,8 +11,8 @@ android {
         applicationId = "com.pg.sentinel"
         minSdk = 26
         targetSdk = 33
-        versionCode = 2
-        versionName = "0.1.1"
+        versionCode = 3
+        versionName = "0.2.0"
     }
 
     // Release signing: only active when RELEASE_SIGNING_JSON points to an existing file
@@ -55,4 +55,6 @@ dependencies {
     implementation("com.google.android.material:material:1.12.0")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
+    implementation("dev.rikka.shizuku:api:13.1.5")
+    implementation("dev.rikka.shizuku:provider:13.1.5")
 }

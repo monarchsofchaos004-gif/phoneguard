@@ -54,6 +54,10 @@ class MainActivity : AppCompatActivity() {
         root.addView(btn("③ 允許使用情況存取") {
             startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
         })
+        root.addView(btn("④（選用）Shizuku 加強模式授權") {
+            Shz.request()
+            refresh()
+        })
         root.addView(space())
         root.addView(btn("▶ 啟動守門") {
             GuardForegroundService.start(this)
@@ -96,6 +100,11 @@ class MainActivity : AppCompatActivity() {
             append(if (acc) "✓ 無障礙已開\n" else "✗ 無障礙未開（點①）\n")
             append(if (ov) "✓ 覆蓋權限已給\n" else "✗ 覆蓋權限未給（點②）\n")
             append(if (GuardService.instance != null) "✓ 守門服務執行中\n" else "· 守門服務未連線\n")
+            append(when {
+                Shz.granted() -> "✓ Shizuku 加強模式：可強制關閉／停用搶手機的 App\n"
+                Shz.alive() -> "· Shizuku 在跑但還沒授權（點④）\n"
+                else -> "· Shizuku 未啟動（選用；沒有也能守門）\n"
+            })
         }
         tvPairing.text = Prefs.pairingSecret(this)
         if (::etServer.isInitialized) etServer.setText(Prefs.server(this))

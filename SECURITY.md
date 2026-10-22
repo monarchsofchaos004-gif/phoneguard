@@ -25,7 +25,11 @@
 ## Known limits（已知極限）— please read before relying on it
 - Tier B (accessibility-service based) cannot force-stop arbitrary apps without root/device-owner. The strongest action is
   repeated HOME + rescue overlay + guiding the user to uninstall.
-- A malicious app that *also* holds accessibility rights can fight back; this guard does not guarantee a win every time.
+  **Optional Shizuku mode** (0.2.0+) closes most of this gap while Shizuku is running: force-stop, revoke draw-over-apps,
+  remove the offending app's accessibility service, and disable block-listed apps. It runs shell-level commands, so it never
+  touches system apps, allow-listed apps or itself, and package names are validated (`[A-Za-z0-9_.]`) before use.
+  On non-rooted phones Shizuku stops at every reboot; until someone starts it again the guard falls back to Tier B.
+- A malicious app that *also* holds accessibility rights can fight back; without Shizuku this guard does not guarantee a win every time.
 - Heuristics (what counts as "takeover") are first-pass and will need tuning on real devices.
 
 ## Reporting

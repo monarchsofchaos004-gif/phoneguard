@@ -21,6 +21,7 @@ Permissions (each is granted by the user in system settings)
 - Usage access and package visibility: to know which app is in the foreground and to recognise the home launcher.
 - Internet: to reach the ntfy relay with encrypted messages.
 - Foreground service, notifications, start at boot: to keep guarding.
+- Shizuku (optional): when granted, lets the guard force-stop, disable, and revoke overlay/accessibility from an app that is taking over the phone.
 
 Privacy
 No analytics, no ads, no tracking, no accounts. The only network traffic is encrypted messages to the ntfy relay you configure.

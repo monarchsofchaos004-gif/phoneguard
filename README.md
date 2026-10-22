@@ -25,6 +25,19 @@ Family members can allow / block / rescue remotely from any device, and ring a l
 | 一直把自己拉回前景 | 送 HOME 後同一 App 立刻回來 | 升級：重複 HOME＋引導解除安裝 |
 | 在封鎖清單上的 App | 一到前景 | 立刻踢回主畫面 |
 
+### Shizuku 加強模式（選用）/ Optional Shizuku mode
+有裝 [Shizuku](https://shizuku.rikka.app/) 並授權時，每次介入會多做無障礙服務做不到的事；沒有 Shizuku 一切照舊。
+With [Shizuku](https://shizuku.rikka.app/) running and granted, each intervention also does what an accessibility service alone cannot. Without Shizuku nothing changes.
+
+| 情況 Case | 加做 Extra action |
+|---|---|
+| 任何介入 Any intervention | `am force-stop`、收回「顯示在其他 App 上」(`appops … SYSTEM_ALERT_WINDOW deny`)、拿掉該 App 的無障礙服務 / force-stop, revoke draw-over-apps, remove its accessibility service |
+| 封鎖清單 Block list | 再加停用（`pm disable-user`）；家人端 `allow <pkg>` 會一併解除停用 / also disable it; `allow <pkg>` from the console re-enables it |
+
+- 系統 App、放行清單、PhoneGuard 自己一律不動 / System apps, the allow list and PhoneGuard itself are never touched.
+- 一般手機重開機後 Shizuku 會停，要有人重新啟動它（家人幫忙）；停掉期間回到一般模式 / On non-rooted phones Shizuku stops after a reboot and must be started again; until then the guard runs in normal mode.
+- 設定畫面按「④ Shizuku 加強模式授權」；家人端狀態會帶 `shizuku: true/false` / Tap ④ in the app; the console status shows `shizuku: true/false`.
+
 ## 架構 / Architecture
 ```
  family console (console/pg_console.py, any device with Python 3)
@@ -68,6 +81,7 @@ Family members can allow / block / rescue remotely from any device, and ring a l
 - [x] 守門核心（無障礙服務）＋救援浮鈕＋常駐服務＋加密轉發
 - [x] 指令防重放、轉發站可設定
 - [x] 遠端響鈴找手機（`ring`／`stopring`，鬧鐘聲道，靜音也會響）
+- [x] 選用 Shizuku 加強模式：強制關閉／停用搶手機的 App、收回它的覆蓋與無障礙權限
 - [ ] 接管情境實機調參（覆蓋／immersive／re-foreground 的門檻）
 - [ ] 家人端做成 App 的「家長模式」（目前是 Python 主控）
 - [ ] 偵測到「要求無障礙／裝置管理員」畫面時主動提醒長輩不要授權

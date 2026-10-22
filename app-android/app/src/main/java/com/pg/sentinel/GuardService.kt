@@ -2,6 +2,7 @@ package com.pg.sentinel
 
 import android.accessibilityservice.AccessibilityService
 import android.content.Intent
+import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.os.Handler
 import android.os.Looper
@@ -52,7 +53,7 @@ class GuardService : AccessibilityService() {
 
         // 反制1：明確封鎖清單
         if (policy.block.contains(pkg)) {
-            intervene(pkg, "封鎖清單")
+            intervene(pkg, "封鎖清單", hard = true)
             return
         }
         // 反制2：送 HOME 後同一非安全 App 立刻又回前景 = 硬搶控制權
@@ -77,13 +78,26 @@ class GuardService : AccessibilityService() {
         GuardBus.emit("已介入($reason)→回主畫面 pkg=$lastPkg")
     }
 
-    private fun intervene(pkg: String, reason: String) {
+    private fun intervene(pkg: String, reason: String, hard: Boolean = false) {
         forceHome(reason)
         RescueOverlay.get()?.flashBlocked(pkg)
+        // 選用加強模式:有 Shizuku 授權才做;系統 App 一律不動(打錯會讓手機失靈)
+        if (Shz.granted() && !isSystemApp(pkg)) {
+            val self = packageName
+            Thread {
+                val did = Shz.counter(pkg, hard, self)
+                if (did.isNotEmpty()) GuardBus.emit("Shizuku 加強($reason):$did pkg=$pkg")
+            }.start()
+        }
     }
+
+    private fun isSystemApp(pkg: String): Boolean = try {
+        (packageManager.getApplicationInfo(pkg, 0).flags and (ApplicationInfo.FLAG_SYSTEM or ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) != 0
+    } catch (e: Exception) { true }   // 查不到當系統 App,不動
 
     private fun isSafePackage(pkg: String): Boolean {
         if (launcherPkgs.contains(pkg)) return true
+        if (policyRef?.allow?.contains(pkg) == true) return true      // 家人放行的 App 不介入
         if (pkg == "com.android.systemui" || pkg == "com.android.settings") return true
         if (pkg.startsWith("com.google.android.")) return true       // GMS/系統元件
         return false

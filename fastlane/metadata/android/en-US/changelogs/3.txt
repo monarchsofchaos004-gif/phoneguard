@@ -1,0 +1,2 @@
+New: optional Shizuku mode. When Shizuku is running and granted, each intervention also force-stops the app, revokes its draw-over-apps permission and removes its accessibility service; block-listed apps are also disabled (allow re-enables them). System apps and allow-listed apps are never touched. Without Shizuku nothing changes.
+Fix: apps on the allow list are no longer intervened by the takeover heuristics.

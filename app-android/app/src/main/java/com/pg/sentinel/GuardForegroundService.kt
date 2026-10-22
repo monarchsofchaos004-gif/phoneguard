@@ -68,7 +68,12 @@ class GuardForegroundService : Service() {
                             } else if (op[0].equals("stopring", ignoreCase = true)) {
                                 applied.add(withContext(Dispatchers.Main) { Ringer.stop() })
                             } else {
-                                applied.add(policy.apply(c, now))
+                                var r = policy.apply(c, now)
+                                if (op[0].equals("allow", ignoreCase = true)) {   // 封鎖清單被 Shizuku 停用過的,放行時一起解除
+                                    val e = Shz.enable(op.getOrElse(1) { "" }.trim())
+                                    if (e.isNotEmpty()) r += "($e)"
+                                }
+                                applied.add(r)
                             }
                         }
                         policy.save(this@GuardForegroundService)
@@ -113,6 +118,7 @@ class GuardForegroundService : Service() {
         o.put("lift", policy.liftUntil)
         o.put("allow", policy.allow.size)
         o.put("block", policy.block.size)
+        o.put("shizuku", Shz.granted())
         transport.pushStatus(o.toString())
     }
 
